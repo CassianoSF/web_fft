@@ -16,7 +16,7 @@ class App extends Component {
 
     let xs = [...Array(512).keys()]
 
-    let signal = xs.map(x => Math.sin(0.9*6.28*x) + 0.2*Math.sin(1.2*6.28*x) )
+    let signal = xs.map(x => Math.sin(0.8*6.28*x) + 0.5*Math.sin(1.1*6.28*x) )
 
     let phasors= fft(signal);
 
@@ -80,8 +80,8 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <Line data={signal_graph} options={this.state.options} width="1500" height="600"/>
-        <Line data={ft_graph} options={this.state.options} width="1500" height="600"/>
+        <Line data={signal_graph} options={this.state.options} width="1200" height="400"/>
+        <Line data={ft_graph} options={this.state.options} width="1200" height="400"/>
       </div>
     );
   }
