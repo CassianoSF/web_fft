@@ -16,12 +16,12 @@ class App extends Component {
 
     let xs = [...Array(512).keys()]
 
-    let signal = xs.map(x => Math.sin(0.8*6.28*x) + 0.5*Math.sin(1.1*6.28*x) )
+    let signal = xs.map(x => 5*Math.sin(0.8*6.28*x) + 2.5*Math.sin(1.1*6.28*x) )
 
     let phasors= fft(signal);
 
     let frequencies = fftUtil.fftFreq(phasors, 8000),
-        magnitudes = fftUtil.fftMag(phasors); 
+        magnitudes = fftUtil.fftMag(phasors).map(m => m/200); 
 
     let both = frequencies.map(function (f, ix) {
         return {frequency: f, magnitude: magnitudes[ix]};
