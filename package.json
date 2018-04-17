@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.1.0",
     "chart.js": "^1.1.1",
-    "fft-js": "0.0.11",
+    "decibels": "^2.0.0",
+    "fourier-transform": "^1.1.2",
     "react": "^16.3.1",
-    "react-chartjs": "^1.2.0",
     "react-dom": "^16.3.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "reactstrap": "^5.0.0-beta.3",
+    "recharts": "^1.0.0-beta.10",
+    "window-function": "^2.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
