@@ -57,10 +57,9 @@ class App extends Component {
   }
 
   lowPass(){
-    let nearest_pow2 = Math.pow( 2, parseInt(Math.log( this.state.sampling_frequency ) / Math.log( 2 )) ); 
-    let xs =[...Array(nearest_pow2).keys()]
-    let norm_rate = this.state.cut_frequency/nearest_pow2
-    let half_samp = nearest_pow2/2
+    let xs =[...Array(this.state.sampling_frequency).keys()]
+    let norm_rate = this.state.cut_frequency/this.state.sampling_frequency
+    let half_samp = this.state.sampling_frequency/2
     let last
     return xs.map((x) => {
       let val = ((Math.sin(10 * Math.PI * norm_rate * (x-half_samp)) / (Math.PI * (x-half_samp))) || last)
@@ -147,22 +146,28 @@ class App extends Component {
   }
 
   handleChange(event) {
-    let result = this.convolve(this.state.signal, this.state.filter)
+    let filter = this.state.filter_type && this[this.state.filter_type]() || []
+    let nearest_pow2 = Math.pow( 2, parseInt(Math.log( filter.length ) / Math.log( 2 )) ); 
+    let filter_fft = fft(filter.slice(0, nearest_pow2));
+    let result = this.convolve(this.state.signal, filter)
     this.setState({
       [event.target.name]: parseInt(event.target.value),
-                   filter: this.state.filter_type && this[this.state.filter_type]() || [],
-               filter_fft: this.state.filter_type && fft(this[this.state.filter_type]()) || [],
-                  result: result
+                   filter: filter,
+               filter_fft: filter_fft,
+                   result: result.filter(r => r)
     });
   }
 
   handleChangeFilter(event){
-    let result = this.convolve(this.state.signal, this.state.filter)
+    let filter = this[event.target.value]()
+    let nearest_pow2 = Math.pow( 2, parseInt(Math.log( filter.length ) / Math.log( 2 )) ); 
+    let filter_fft = fft(filter.slice(0, nearest_pow2));
+    let result = this.convolve(this.state.signal, filter)
     this.setState({
      filter_type: event.target.value,
-          filter: this[event.target.value](),
-      filter_fft: fft(this[event.target.value]()),
-          result: result
+          filter: filter,
+      filter_fft: filter_fft,
+          result: result.filter(r => r)
     });
   }
 
@@ -174,7 +179,7 @@ class App extends Component {
     let filter_fft_data = this.graphData(this.state.filter_fft, "fourier")
     let result_data     = this.graphData(this.state.result,     "signal")
 
-    console.log(this.state)
+    console.log(this.state.result)
 
     return (
       <Container>
