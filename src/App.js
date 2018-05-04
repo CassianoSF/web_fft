@@ -26,7 +26,7 @@ class App extends Component {
 
     this.state = {
       sampling_frequency: 0, 
-           cut_frequency: 0, 
+           cut_frequency: 30, 
                   result: [],
                   signal: [], 
                       xs: [], 
@@ -41,7 +41,7 @@ class App extends Component {
 
   convolve(array, weights) {
     if (weights.length % 2 !== 1)
-      throw new Error('weights array must have an odd length');
+      weights = weights.slice(0,-1)
     var al = array.length;
     var wl = weights.length;
     var offset = ~~(wl / 2);
@@ -57,9 +57,10 @@ class App extends Component {
   }
 
   lowPass(){
-    let xs =[...Array(this.state.sampling_frequency).keys()]
-    let norm_rate = this.state.cut_frequency/this.state.sampling_frequency
-    let half_samp = this.state.sampling_frequency/2
+    let nearest_pow2 = Math.pow( 2, parseInt(Math.log( this.state.sampling_frequency ) / Math.log( 2 )) ); 
+    let xs =[...Array(nearest_pow2).keys()]
+    let norm_rate = this.state.cut_frequency/nearest_pow2
+    let half_samp = nearest_pow2/2
     let last
     return xs.map((x) => {
       let val = ((Math.sin(10 * Math.PI * norm_rate * (x-half_samp)) / (Math.PI * (x-half_samp))) || last)
@@ -108,7 +109,8 @@ class App extends Component {
     let xs = [...Array(signal.length).keys()].map(x => x/360)
     this.setState({
       signal: signal,
-      xs: xs
+      xs: xs,
+      sampling_frequency: signal.length
     })
     let nearest_pow2 = Math.pow( 2, parseInt(Math.log( this.state.signal.length ) / Math.log( 2 )) ); 
     let signal_fft = fft(this.state.signal.slice(0, nearest_pow2));
@@ -145,18 +147,22 @@ class App extends Component {
   }
 
   handleChange(event) {
+    let result = this.convolve(this.state.signal, this.state.filter)
     this.setState({
       [event.target.name]: parseInt(event.target.value),
                    filter: this.state.filter_type && this[this.state.filter_type]() || [],
-               filter_fft: this.state.filter_type && fft(this[this.state.filter_type]()) || []
+               filter_fft: this.state.filter_type && fft(this[this.state.filter_type]()) || [],
+                  result: result
     });
   }
 
   handleChangeFilter(event){
+    let result = this.convolve(this.state.signal, this.state.filter)
     this.setState({
      filter_type: event.target.value,
           filter: this[event.target.value](),
-      filter_fft: fft(this[event.target.value]())
+      filter_fft: fft(this[event.target.value]()),
+          result: result
     });
   }
 
