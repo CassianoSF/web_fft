@@ -7,7 +7,10 @@
     "chart.js": "^1.1.1",
     "decibels": "^2.0.0",
     "fourier-transform": "^1.1.2",
+    "ndarray": "^1.0.18",
     "ndarray-convolve": "^2.0.0",
+    "ndarray-fft": "^1.0.3",
+    "ndarray-ops": "^1.2.2",
     "numjs": "^0.15.1",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
@@ -15,7 +18,8 @@
     "react-scripts": "1.1.4",
     "reactstrap": "^5.0.0-beta.3",
     "recharts": "^1.0.0-beta.10",
-    "window-function": "^2.0.2"
+    "window-function": "^2.0.2",
+    "zeros": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

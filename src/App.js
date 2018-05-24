@@ -24,36 +24,41 @@ class App extends Component {
     this.bandPass  = this.bandPass.bind(this)
     this.bandBlock = this.bandBlock.bind(this)
 
+    let xs = [...Array(256).keys()]
+    let signal = xs.map(x => Math.sin(x/10) + 0.2*Math.sin(x) ) 
+
+    let siganl_fft = fft(signal)
+
     this.state = {
-      sampling_frequency: 0, 
+      sampling_frequency: 512, 
            cut_frequency: 30, 
                   result: [],
-                  signal: [], 
+                  signal: signal, 
                       xs: [], 
-              signal_fft: [], 
+              signal_fft: siganl_fft, 
            signal_fft_db: [], 
                   filter: [],
               filter_fft: [],
              filter_type: null, 
-             window_type: null,
+             window_type: "lowPass",
     }
   }
 
-  convolve(array, weights) {
-    if (weights.length % 2 !== 1)
-      weights = weights.slice(0,-1)
-    var al = array.length;
-    var wl = weights.length;
-    var offset = ~~(wl / 2);
-    var output = new Array(al);
-    for (var i = 0; i < al; i++) {
-      var kmin = (i >= offset) ? 0 : offset - i;
-      var kmax = (i + offset < al) ? wl - 1 : al - 1 - i + offset;
-      output[i] = 0;
-      for (var k = kmin; k <= kmax; k++)
-        output[i] += array[i - offset + k] * weights[k];
-    }
-    return output;
+  convolve(signal, filter) {
+    let matrix = signal.map(sig => {
+      return filter.map(fil =>{
+        return sig * fil
+      })
+    })
+
+    let result = []
+    for (let linha = 0; linha < matrix.length; linha++)
+      for (let coluna = 0; coluna < matrix[0].length; coluna++)
+        if (result[linha+coluna])
+          result[linha+coluna] += matrix[linha][coluna]
+        else
+          result[linha+coluna] = matrix[linha][coluna]
+    return result
   }
 
   lowPass(){
@@ -74,7 +79,7 @@ class App extends Component {
     let half_samp = this.state.sampling_frequency/2
     let last
     return xs.map((x) => {
-      let val = (Math.sin(10 * Math.PI * norm_rate * (x-half_samp)) / (Math.PI * (x-half_samp))) || last
+      let val = -(Math.sin(10 * Math.PI * norm_rate * (x-half_samp)) / (Math.PI * (x-half_samp))) || last
       last = val
       return val
     })
